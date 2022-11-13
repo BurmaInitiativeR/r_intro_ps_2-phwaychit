@@ -16,6 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 First thing first, you definitely need `tidyverse` pkg for this exercise. Don't forgot to load it at the top of your answer `rmd` file. 
 
+
 Let's go back to the previous exercise on implementation of the sampling distribution of the means. 
 
 
@@ -58,5 +59,107 @@ library(tidyverse)
 iris %>%
   group_by(Species) %>%
   summarise(mean = mean(Sepal.Length))
+
+```
+## 2.Construct the list of 100 means values from the Sepal.Length and each mean value should construct from 10 sample sizes. (sample size = 10, replication 100 times)3. Assigned the result (vector with 100 numbers) as vector name called means_list and
+```{r}
+df <- iris
+means_list <- replicate(n = 100, expr = mean(sample(df$Sepal.Length, size = 10, replace=TRUE)))
+means_list
+```
+
+## 4.Construct the another vector called test and assigned 1 hundred time in that vector. Use rep()function for generation of same value for 100 times.
+```{r}
+test <- rep (100,100)
+test
+```
+
+## Then, using cbind function to combined those two vectors” test and mean_list, and treat the result as data.frame and assigned to the object name mean_list_1. You can try with below demo code.
+```{r}
+means_list_1 <- data.frame(cbind(test, means_list))
+means_list_1
+```
+
+## Repeat the same process from numbers 1 to 4, but using different sample size and replication number this time.
+```{r replicate}
+set.seed(19586)
+means_list_2 <- replicate(n = 200, 
+                          expr = mean(
+                            sample(df$Sepal.Length, 
+                                   size = 30, 
+                                   replace=TRUE)))
+means_list_2
+
+means_list_3 <- replicate(n = 1000, 
+                          expr = mean(
+                            sample(df$Sepal.Length, 
+                                   size = 50, 
+                                   replace=TRUE)))
+means_list_3
+
+
+means_list_4 <- replicate(n = 3000, 
+                          expr = mean(
+                            sample(df$Sepal.Length, 
+                                   size = 50, 
+                                   replace=TRUE)))
+means_list_4
+
+
+means_list_5 <- replicate(n = 10000, 
+                          expr = mean(
+                            sample(df$Sepal.Length, 
+                                   size = 50, 
+                                   replace=TRUE)))
+means_list_5
+
+```
+
+## This time, we are going to create the list to store all those means_list_x (where x 1:5) and assigned that list as means_seris. And, perform the following function from that list.
+```{r}
+
+means_series <- list(a = means_list_1, b = means_list_2, c = means_list_3, d = means_list_4, e = means_list_5)
+means_series
+typeof(means_series)
+str(means_series)
+
+```
+
+## 1. calculate the mean of means_list_x (where x 1:5) from that list (using the command related to filtering list from lecture 2
+```{r mean}
+mean(means_series[[1]][[1]])
+mean(means_series[[1]][[2]])
+mean(means_series[[2]])
+mean(means_series[[3]])
+mean(means_series[[4]])
+mean(means_series[[5]])
+
+
+```
+
+## Using bind_rows() function to combined all dataset from means_seris and assigned into object called df_means_combined. Please make sure that your result dataset should have 14300 observations and 2 variables; test and mean_list.
+```{r}
+df1 <- data.frame(test=c(means_series[[1]][[1]]))
+df2 <- data.frame(test=c(means_series[[1]][[1]]), mean_list=c(means_series[[1]][[2]]))
+df3 <- data.frame(test=c(means_series[[1]][[1]]), mean_list=c(means_series[[2]]))
+df4 <- data.frame(test=c(means_series[[1]][[1]]), mean_list=c(means_series[[3]]))
+df5 <- data.frame(test=c(means_series[[1]][[1]]), mean_list=c(means_series[[4]]))
+df6 <- data.frame(test=c(means_series[[1]][[1]]), mean_list=c(means_series[[5]]))
+df_means_combined <- bind_rows(df2,df3,df4,df5,df6)
+df_means_combined
+view(df_means_combined)
+
+
+```
+
+## Finally, calculate the mean value for each group of test using following example. In this exercise, we are going to use group_by function from the tidyverse packge and %>% operator (pipe operator).
+
+```{r}
+dfm <- as.data.frame(df_means_combined)
+dfm
+
+dfm %>%
+  group_by(df$test) %>%
+  summarise(mean1 = mean(mean_list, na.rm = TRUE))
 
 ```
